@@ -1,0 +1,60 @@
+---
+title: "World Pollution Data Analysis"
+author: "Jerin Jacob"
+description: "World Pollution"
+date: "01/07/2023"
+format:
+  html:
+    toc: true
+    code-fold: true
+    code-copy: true
+    code-tools: true
+categories:
+  - challenge_1
+---
+
+```{r}
+#| label: setup
+#| warning: false
+#| message: false
+
+library(tidyverse)
+library(readxl)
+library(dplyr)
+
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
+```
+
+```{r}
+world_pollution <- read_csv("_data/World most polluted countries  regions historical data 2018-2021.csv") %>%
+  select('Country/Region', '2021', 'Population') %>%
+  rename("Country" = "Country/Region", "Pollution" = "2021")
+  
+world_pollution
+```
+```{r}
+gdp_per_capita <- read_csv("_data/gdp_per_capita.csv") %>%
+  select('Country Name', '2020') %>%
+  rename("Country" = "Country Name", "GDP" = "2020")
+gdp_per_capita
+```
+```{r}
+area_of_countries <- read_csv("_data/countries of the world.csv") %>%
+  select('Country', 'Area (sq. mi.)', 'Pop. Density (per sq. mi.)')
+
+area_of_countries
+
+```
+
+
+```{r}
+df <- world_pollution %>% inner_join(gdp_per_capita,by="Country") %>%
+  inner_join(area_of_countries, by="Country") %>%
+  drop_na()
+df
+length(unique(df$Country))
+```
+```{r}
+write.csv(df, "pollution_data.csv", row.names = FALSE)
+```
+
